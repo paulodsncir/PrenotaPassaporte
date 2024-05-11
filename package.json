@@ -8,20 +8,12 @@
   "author": "constantini",
   "main": "dist/index.js",
   "scripts": {
-    "buildW": "rmdir /s /q dist && swc src -d dist",
-    "build-devW": "npm run build && node --inspect dist/index.js",
-    "devW": "rmdir /s /q dist && nodemon --ext ts --exec \"npm run build-dev\"",
-    "dev:jsW": "node index.js",
-    "startW": "nodemon --ext ts --exec \"npm run build-dev\"",
-    "printPageW": "npm run build && node --inspect dist/printPage.js",
-    "testW": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -fr dist && swc src -d dist",
+    "build": "rmdir /s /q dist && swc src -d dist",
     "build-dev": "npm run build && node --inspect dist/index.js",
-    "dev": "rm -fr dist && nodemon --ext ts --exec \"npm run build-dev\"",
+    "dev": "rmdir /s /q dist && nodemon --ext ts --exec \"npm run build-dev\"",
     "dev:js": "node index.js",
     "start": "nodemon --ext ts --exec \"npm run build-dev\"",
-    "printPage": "npm run build && node --inspect dist/printPage.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "printPage": "npm run build && node --inspect dist/printPage.js"
     
   },
   "dependencies": {

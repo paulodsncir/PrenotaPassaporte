@@ -12,7 +12,7 @@ import { Console } from 'console'
 
 
 const main = async () => {
-  const browser = await webkit.launch({ headless: false  })
+  const browser = await webkit.launch({ headless: true  })
 
   let timeInterval = setInterval(async () => {
     for (const userId of telegramUsers) {
