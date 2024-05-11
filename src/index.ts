@@ -25,7 +25,7 @@ const main = async () => {
 
   let prenota  = async () => {
 
-    let browser = await webkit.launch({ headless: false  })
+    let browser = await webkit.launch({ headless: true  })
     const page = await browser.newPage()
 
     try {
@@ -59,7 +59,7 @@ const main = async () => {
           }
         } catch (error) {
           for (const userId of telegramUsers) {
-            await bot.telegram.sendMessage(userId, (error as Error).message).catch()
+           // await bot.telegram.sendMessage(userId, (error as Error).message).catch()
           }
   
           if (countError >= 5) {
