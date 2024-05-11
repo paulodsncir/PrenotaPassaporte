@@ -12,7 +12,7 @@ import { Console } from 'console'
 
 
 const main = async () => {
-  const browser = await webkit.launch({ headless: true  })
+  
 
   let timeInterval = setInterval(async () => {
     for (const userId of telegramUsers) {
@@ -20,54 +20,71 @@ const main = async () => {
     }
   }, 1000 * 60 * 60)
 
-  try {
+  
+
+
+  let prenota  = async () => {
+
+    let browser = await webkit.launch({ headless: false  })
     const page = await browser.newPage()
 
-    await auth(page, users[0].email, users[0].password)
+    try {
 
-    let loop = true
-    let countError = 0
-    do {
-      try {
-        const isAvailable = await passportAppointmentIsAvailable(page)
-        console.log('trying access')
-
-        if (typeof isAvailable === 'string') {
-          console.log("erro",countError)
-          countError++
-        } else if (isAvailable) {
+      
+  
+      await auth(page, users[0].email, users[0].password)
+  
+      let loop = true
+      let countError = 0
+      do {
+        try {
+          const isAvailable = await passportAppointmentIsAvailable(page)
+          console.log('trying access')
+  
+          if (typeof isAvailable === 'string') {
+            console.log("erro",countError)
+            countError++
+          } else if (isAvailable) {
+            for (const userId of telegramUsers) {
+              await bot.telegram.sendMessage(userId, 'Prenotami Agendamento do passporte disponível').catch()
+              console.log('Vagas Abertas')
+          
+            }
+          }
+  
+          // loop = !isAvailable
+          if (countError >=5) {
+            
+            throw new Error('user logout: LOGIN AGAIN')
+          }
+        } catch (error) {
           for (const userId of telegramUsers) {
-            await bot.telegram.sendMessage(userId, 'Prenotami Agendamento do passporte disponível').catch()
-            console.log('Vagas Abertas')
-        
+            await bot.telegram.sendMessage(userId, (error as Error).message).catch()
+          }
+  
+          if (countError >= 5) {
+            throw new Error('reload main function ')
           }
         }
-
-        // loop = !isAvailable
-        if (countError >=5) {
-          
-          throw new Error('user logout: LOGIN AGAIN')
-        }
-      } catch (error) {
-        for (const userId of telegramUsers) {
-          await bot.telegram.sendMessage(userId, (error as Error).message).catch()
-        }
-
-        if (countError >= 5) {
-          throw new Error('reload main function ')
-        }
+      } while (loop)
+    } catch (error) {
+      console.error('catch an error 👀: run message error: ' + (error as Error).message)
+      for (const userId of telegramUsers) {
+        //await bot.telegram.sendMessage(userId, (error as Error).message).catch()
       }
-    } while (loop)
-  } catch (error) {
-    console.error('catch an error 👀: run message error: ' + (error as Error).message)
-    for (const userId of telegramUsers) {
-      await bot.telegram.sendMessage(userId, (error as Error).message).catch()
+      await browser.close().catch()
+     
+      console.log("Reiniciando")
+      prenota()
     }
-    await browser.close().catch()
-    clearInterval(timeInterval)
-    console.log("Reiniciando")
-    main()
+
+
   }
+
+  prenota()
+  clearInterval(timeInterval)
+
+ 
 }
 
 main()
