@@ -8,14 +8,13 @@
   "author": "constantini",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rmdir /s /q dist && swc src -d dist",
+    "build": "rm -rf dist && swc src -d dist",
     "build-dev": "npm run build && node --inspect dist/index.js",
-    "dev": "rmdir /s /q dist && nodemon --ext ts --exec \"npm run build-dev\"",
+    "dev": "rm -rf dist && nodemon --ext ts --exec \"npm run build-dev\"",
     "dev:js": "node index.js",
     "start": "nodemon --ext ts --exec \"npm run build-dev\"",
     "printPage": "npm run build && node --inspect dist/printPage.js"
-    
-  },
+},
   "dependencies": {
     "i": "^0.3.7",
     "npm": "^9.7.2",
