@@ -1,90 +1,75 @@
-import { webkit, Page } from 'playwright'
-import fs from 'fs/promises'
+import { webkit } from 'playwright';
+import { passportAppointmentIsAvailable } from './functions/passport';
+import { auth } from './functions/auth';
+import { bot } from './services/telegram';
+import { telegramUsers } from './services/telegramUsers';
+import users from './constants/fakeUser';
 
-import { passportAppointmentIsAvailable } from './functions/passport'
-import { auth } from './functions/auth'
-
-import { bot } from './services/telegram'
-import { telegramUsers } from './services/telegramUsers'
-
-import users from './constants/fakeUser'
-import { Console } from 'console'
-
-
-const main = async () => {
-  
-
-  let timeInterval = setInterval(async () => {
+const startInterval = () => {
+  return setInterval(async () => {
     for (const userId of telegramUsers) {
-      await bot.telegram.sendMessage(userId, 'App running').catch()
+      await bot.telegram.sendMessage(userId, 'App running').catch();
     }
-  }, 1000 * 60 * 60)
+  },  20000);
+};
 
-  
+const prenota = async () => {
+  let browser = await webkit.launch({ headless: true });
+  const page = await browser.newPage();
 
+  try {
+    await auth(page, users[0].email, users[0].password);
 
-  let prenota  = async () => {
+    let loop = true;
+    let countError = 0;
+    do {
+      try {
+        const isAvailable = await passportAppointmentIsAvailable(page);
+        console.log('trying access');
 
-    let browser = await webkit.launch({ headless: true  })
-    const page = await browser.newPage()
-
-    try {
-
-      
-  
-      await auth(page, users[0].email, users[0].password)
-  
-      let loop = true
-      let countError = 0
-      do {
-        try {
-          const isAvailable = await passportAppointmentIsAvailable(page)
-          console.log('trying access')
-  
-          if (typeof isAvailable === 'string') {
-            console.log("erro",countError)
-            countError++
-          } else if (isAvailable) {
-            for (const userId of telegramUsers) {
-              await bot.telegram.sendMessage(userId, 'Prenotami Agendamento do passporte disponível').catch()
-              console.log('Vagas Abertas')
-          
-            }
-          }
-  
-          // loop = !isAvailable
-          if (countError >=5) {
-            
-            throw new Error('user logout: LOGIN AGAIN')
-          }
-        } catch (error) {
+        if (typeof isAvailable === 'string') {
+          console.log('erro', countError);
+          countError++;
+        } else if (isAvailable) {
           for (const userId of telegramUsers) {
-           // await bot.telegram.sendMessage(userId, (error as Error).message).catch()
-          }
-  
-          if (countError >= 5) {
-            throw new Error('reload main function ')
+            await bot.telegram.sendMessage(userId, 'Prenotami Agendamento do passaporte disponível').catch();
+            console.log('Vagas Abertas');
           }
         }
-      } while (loop)
-    } catch (error) {
-      console.error('catch an error 👀: run message error: ' + (error as Error).message)
-      for (const userId of telegramUsers) {
-        //await bot.telegram.sendMessage(userId, (error as Error).message).catch()
+
+        if (countError >= 5) {
+          throw new Error('user logout: LOGIN AGAIN');
+        }
+      } catch (error) {
+        for (const userId of telegramUsers) {
+          // await bot.telegram.sendMessage(userId, error.message).catch();
+        }
+
+        if (countError >= 5) {
+          throw new Error('reload main function ');
+        }
       }
-      await browser.close().catch()
-     
-      console.log("Reiniciando")
-      prenota()
+    } while (loop);
+  } catch (error) {
+    console.error('catch an error 👀: run message error: ' + error.message);
+    for (const userId of telegramUsers) {
+      // await bot.telegram.sendMessage(userId, error.message).catch();
     }
+    await browser.close().catch();
 
+    console.log('Reiniciando');
+    prenota();
+  }
+};
 
+const main = async () => {
+
+  for (const userId of telegramUsers) {
+    await bot.telegram.sendMessage(userId, 'App started').catch();
   }
 
-  prenota()
-  clearInterval(timeInterval)
+  let timeInterval = startInterval();
+  prenota();
+};
 
- 
-}
-
-main()
+main();
