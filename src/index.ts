@@ -10,7 +10,7 @@ const startInterval = () => {
     for (const userId of telegramUsers) {
       await bot.telegram.sendMessage(userId, 'App running').catch();
     }
-  },  20000);
+  },  1000 * 60 * 60);
 };
 
 const prenota = async () => {
