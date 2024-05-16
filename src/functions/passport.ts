@@ -30,7 +30,7 @@ export const passportAppointmentIsAvailable = async (
     await page.waitForLoadState('load')
     console.log("load2")
     const url = await page.url()
-    if (url.includes("/Services/Booking/1319") && !await page.$("#myInputTextField")) {
+    if (url.includes("/Services/Booking/1319") && await page.$("#typeofbookingddl")) {
       console.log("entrei no if")
 
       return true
