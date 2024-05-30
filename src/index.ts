@@ -32,7 +32,7 @@ const prenota = async () => {
           countError++;
         } else if (isAvailable) {
           for (const userId of telegramUsers) {
-            await bot.telegram.sendMessage(userId, 'Prenotami Agendamento do passaporte disponível').catch();
+            await bot.telegram.sendMessage(userId, 'Prenotami Agendamento do identidade disponível').catch();
             console.log('Vagas Abertas');
           }
         }

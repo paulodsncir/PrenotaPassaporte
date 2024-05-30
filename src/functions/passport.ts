@@ -24,13 +24,14 @@ export const passportAppointmentIsAvailable = async (
     await page.waitForLoadState('load')
     console.log("loadService")
     await page.waitForTimeout(5);
-    await page.locator('a[href="/Services/Booking/1319"] > button.button.primary').click({ force: true });
-    // await page.locator('a[href="/Services/Booking/503"] > button.button.primary').click({force:true});
+    await page.locator('a[href="/Services/Booking/898"] > button.button.primary').click({ force: true });
+    // await page.locator('a[href="/Services/Booking/1319"] > button.button.primary').click({force:true});
     await page.waitForTimeout(5);
     await page.waitForLoadState('load')
     console.log("load2")
     const url = await page.url()
-    if (url.includes("/Services/Booking/1319") && await page.$("#typeofbookingddl")) {
+   // if (url.includes("/Services/Booking/1319") && await page.$("#typeofbookingddl")) {
+    if (url.includes("/Services/Booking/898") && await page.$("#typeofbookingddl")) {
       console.log("entrei no if")
 
       return true
